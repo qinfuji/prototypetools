@@ -61,7 +61,21 @@ module.exports = function (grunt) {
           '.tmp/styles/{,*/}*.css',
           '<%= config.app %>/images/{,*/}*'
         ]
+      },
+
+      template :{
+        files: ['app/tpls/*.html'],
+        task:['tpltojs']
       }
+    },
+
+    tpltojs :{
+       options:{
+         moduleName : 'prototypetools',
+         base : './',
+         outfile : 'app/scripts/template.js'
+       },
+       src: 'app/tpls/*.html'
     },
 
     // The actual grunt server settings
