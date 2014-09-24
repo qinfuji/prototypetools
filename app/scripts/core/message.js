@@ -18,7 +18,7 @@ window.glue = (function (glue) {
      * @param  {Object}   context  回调函数执行的上下文，如果没有传入的话，会指向window
      * 对于一个自定义事件，可以反复定义的。
      */
-    on: function (name, callback, context) {
+    subscribe: function (name, callback, context) {
       context = context || win;
 
       if (typeof events[name] === 'undefined') {
@@ -38,7 +38,7 @@ window.glue = (function (glue) {
      * 触发一个自定义事件
      * @param  {String} name 事件名称
      */
-    trigger: function (name) {
+    publish: function (name) {
 
       var eventList = events[name];
       var event;

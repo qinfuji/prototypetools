@@ -1,7 +1,7 @@
 /**
  * 环境
  */
-define("Application" , ["F_glue" ,"jquery" , "RequestProxy"] , function( glue , $ , request){
+define("Application" , ["F_glue" ,"jquery" , "RequestProxy" , "AppConstant"] , function( glue , $ , request , AppConstant){
 
     var AppFrameWork = function(){
 
@@ -9,48 +9,54 @@ define("Application" , ["F_glue" ,"jquery" , "RequestProxy"] , function( glue , 
         var componentInstances = {};
 
         //当前选择的组件
-    	var curSelectComponent = null;
+        var curSelectComponentInfo = null;
+
+        var that = this;
+
+        this.init = function(){
+            glue.subscribe(AppConstant.MSG_SELECT_COMPNENT_INFO ,   this.setSelectComponentInfo , this);
+            glue.subscribe(AppConstant.MSG_UNSELECT_COMPNENT_INFO , this.setSelectComponentInfo , this);
+        }
 
     	//注册消息
     	//1、组件选择、取消选择消息
     	//设置鼠标状态
-    	function setSelectedMousestatus(sleected){
+    	this.setSelectedMousestatus = function(sleected){
     		if(curSelectComponent == null){
     			return;
     		}
     		//设置鼠标状态为选择组件状态
     		if(selected){
-    			//
+    			//设置选择状态
     		}else{
-    			//发出通知组件取消选择，接收消息的组件自行处理
+    			//取消选择状态
     		}
     	}
 
     	//初始化页面创建区域的事件
-    	$('pageEditplan').on('click' , function(){
-    		if(curSelectComponent != null){
-    			//如果当前有选择的组件，单击则将组件放置到编辑容器中
-    			//1、请求组件的js脚本
-    			//2、
-    			return;
-    		}else{
-                //如果curSelectCompnent==null,
-                //首先判断是否选中的相应的组件，如果有，显示操作列表（配置，拖动）
-                //
+    	$('pageEditplan').on('click' , function(e){
+    		if(3 == e.which){ 
+               glue.log('右键选择');
+               if(curSelectComponent!=null){
+                    glue.publish(AppConstant.MSG_UNSELECT_COMPNENT_INFO , {source:that , obj:null});
+                    that.setSelectedMousestatus(false); //取消选择
+               }
+            }else{
+               if(curSelectComponent!=null){
+                    that.installComponent(curSelectComponentInfo);
+               }
             }
+            return false;
     	});
 
-    	$(document).mousedown(function(e){
-    		if(3 == e.which){ 
-               alert('这是右键单击事件'); 
-            }
-    	})
+    	
     	/**
     	 * 设置当前在组件面板中选择的组件
     	 */
-    	this.setSelectComponent = function(componentInfo){
-            curSelectComponent = componentInfo;
+    	this.setSelectComponentInfo = function(componentInfo){
+            curSelectComponentInfo = componentInfo;
             //修改当前鼠标状态为选择
+            this.setSelectedMousestatus(typeof componentInfo != 'undefined');
     	}
 
         /**
