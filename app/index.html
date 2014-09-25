@@ -21,9 +21,9 @@
       <p class="browsehappy">You are using an <strong>outdated</strong> browser. Please <a href="http://browsehappy.com/">upgrade your browser</a> to improve your experience.</p>
     <![endif]-->
 
-    <div class="panel panel-primary col-md-2" 
-         style="position: absolute;height:100%;padding-right:0;padding-left:0;top:0;left:0;">
-      <div class="panel-heading" style="">
+    <div id="compListPanel" class="panel panel-primary col-md-2" 
+         style="position: absolute;height:80%;padding-right:0;padding-left:0;top:10px;left:10px;box-shadow: -1px 5px 10px rgba(0,0,0,.4);">
+      <div id="compListPanelHead" class="panel-heading" style="cursor:pointer;">
         <h3 class="panel-title">组件列表</h3>
       </div>
       <div class="panel-body">
@@ -154,7 +154,42 @@
                   var html = template.test(null);
                   $('body').append(html);
                   glue.publish('unSelectComponent' , 1);
-          })
+          });
+
+
+          (function($){
+            //拖拽插件,参数:id或object
+            $.Move = function(_this , target){
+                if(typeof(_this)=='object'){
+                    _this=_this;
+                }else{
+                    _this=$("#"+_this);
+                }
+                if(!_this){return false;}
+         
+                _this.hover(function(){$(this).css("cursor","move");},function(){$(this).css("cursor","default");})
+                _this.mousedown(function(e){//e鼠标事件
+                    var offset = $(target).offset();
+                    var x = e.pageX - offset.left;
+                    var y = e.pageY - offset.top;
+                    _this.css({'opacity':'0.3'});
+                    $(document).bind("mousemove",function(ev){//绑定鼠标的移动事件，因为光标在DIV元素外面也要有效果，所以要用doucment的事件，而不用DIV元素的事件
+                        _this.bind('selectstart',function(){return false;});
+                        var _x = ev.pageX - x;//获得X轴方向移动的值
+                        var _y = ev.pageY - y;//获得Y轴方向移动的值
+                        target.css({'left':_x+"px",'top':_y+"px"});
+                        return false;
+                    });
+                });
+         
+                $(document).mouseup(function(){
+                    $(this).unbind("mousemove");
+                    _this.css({'opacity':''});
+                });
+                return false;
+            };
+        })(jQuery);
+        $.Move($("#compListPanelHead") , $('#compListPanel'));
         </script>
         
 </body>
